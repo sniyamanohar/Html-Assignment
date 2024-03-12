@@ -2,12 +2,110 @@
 <html>
 
 <head>
-    <title>Add vedio</title>
+    <style>
+    #sammieBubble {
+        aspect-ratio: 1/1;
+        position: absolute;
+        z-index: 2;
+        width: 30vw;
+        max-width: 375px;
+        height: auto;
+        clip-path: circle(50%);
+        opacity: 0.9;
+      }
+      
+        /* Stunning Wicked set background image ia a video screenshot from
+      "Wicked Act One Set" designed by WILLIE WU. 
+      https://www.williewu.com/wicked    Worth a look. */
+      
+      body {
+        background: black;
+        background-image: url("https://assets.codepen.io/191814/wicke-clock-background.jpg");
+        background-size: cover;
+        background-repeat: no-repeat;
+        margin: 0;
+        height:100vh;
+        overflow:hidden;
+      }
+      </style>
+      
 </head>
 
 <body>
-    <vedio controls>
-        <source src="">
+    <video id="sammieBubble" poster="https://assets.codepen.io/191814/sammie-green-bubble-overlay.jpg" autoplay muted loop>
+        <source src="https://assets.codepen.io/191814/cp-green-sammie-bubble-overlay.mp4" />
+      </video>
+      <script>
+        // Randomly move an element contrained within the viewport
+
+const movingElement = document.getElementById("sammieBubble");
+const viewportWidth = window.innerWidth;
+const viewportHeight = window.innerHeight;
+const elementWidth = movingElement.offsetWidth;
+const elementHeight = movingElement.offsetHeight;
+
+function getRandomPosition() {
+  const x = Math.random() * (viewportWidth - elementWidth);
+  const y = Math.random() * (viewportHeight - elementHeight);
+  return { x, y };
+}
+
+function moveElement() {
+  const newPosition = getRandomPosition();
+  const currentX = parseFloat(movingElement.style.left || 0);
+  const currentY = parseFloat(movingElement.style.top || 0);
+  const dx = newPosition.x - currentX;
+  const dy = newPosition.y - currentY;
+  const duration = 2000; // milliseconds
+
+  let start = null;
+  function step(timestamp) {
+    if (!start) start = timestamp;
+    const progress = timestamp - start;
+    movingElement.style.left = `${currentX + (progress / duration) * dx}px`;
+    movingElement.style.top = `${currentY + (progress / duration) * dy}px`;
+    if (progress < duration) {
+      window.requestAnimationFrame(step);
+    }
+  }
+
+  window.requestAnimationFrame(step);
+}
+
+function constrainElement() {
+  const currentX = parseFloat(movingElement.style.left || 0);
+  const currentY = parseFloat(movingElement.style.top || 0);
+  if (currentX < 0) {
+    movingElement.style.left = "0px";
+  } else if (currentX + elementWidth > viewportWidth) {
+    movingElement.style.left = `${viewportWidth - elementWidth}px`;
+  }
+  if (currentY < 0) {
+    movingElement.style.top = "0px";
+  } else if (currentY + elementHeight > viewportHeight) {
+    movingElement.style.top = `${viewportHeight - elementHeight}px`;
+  }
+}
+
+function moveAndConstrain() {
+  moveElement();
+  constrainElement();
+}
+
+// Initial movement and constraint
+moveAndConstrain();
+
+// Update position every 3 seconds
+setInterval(moveAndConstrain, 3000);
+
+// refresh window on resize 
+// needed to recalculate viewport dimensions
+window.addEventListener('resize', function() {
+    location.reload();
+});
+
+
+      </script>
     </body>
 
 </html>
